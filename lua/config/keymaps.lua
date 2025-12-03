@@ -4,5 +4,24 @@
 
 local map = vim.keymap.set
 
--- Open posting (TUI HTTP Client)
-map("n", "<leader>h", function() Snacks.terminal("posting") end, { desc = "Posting (HTTP Client)" })
+-- Tools Group
+map("n", "<leader>tg", function()
+  Snacks.lazygit()
+end, { desc = "LazyGit" })
+map("n", "<leader>td", function()
+  Snacks.terminal("lazydocker")
+end, { desc = "LazyDocker" })
+map("n", "<leader>tp", function()
+  Snacks.terminal("posting")
+end, { desc = "Posting (HTTP)" })
+
+-- Lazy Group
+-- Remove default mappings to avoid conflicts/delays
+pcall(vim.keymap.del, "n", "<leader>l")
+pcall(vim.keymap.del, "n", "<leader>L")
+
+map("n", "<leader>ll", "<cmd>Lazy<cr>", { desc = "Lazy" })
+map("n", "<leader>le", "<cmd>LazyExtras<cr>", { desc = "Lazy Extras" })
+map("n", "<leader>lL", function()
+  LazyVim.news.changelog()
+end, { desc = "LazyVim Changelog" })
