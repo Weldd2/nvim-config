@@ -14,6 +14,9 @@ end, { desc = "LazyDocker" })
 map("n", "<leader>tp", function()
   Snacks.terminal("posting")
 end, { desc = "Posting (HTTP)" })
+map("n", "<leader>tm", function()
+  Snacks.terminal("tttui")
+end, { desc = "Monkeytype" })
 
 -- Lazy Group
 -- Remove default mappings to avoid conflicts/delays
