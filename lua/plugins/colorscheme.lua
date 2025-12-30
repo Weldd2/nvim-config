@@ -1,8 +1,15 @@
 return {
-  -- add gruvbox
-  { "rebelot/kanagawa.nvim" },
-
-  -- Configure LazyVim to load gruvbox
+  {
+    "rebelot/kanagawa.nvim",
+    opts = {
+      overrides = function(colors)
+        return {
+          -- Couleur de sélection plus visible
+          Visual = { bg = colors.palette.waveBlue2 },
+        }
+      end,
+    },
+  },
   {
     "LazyVim/LazyVim",
     opts = {
