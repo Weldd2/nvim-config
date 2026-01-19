@@ -14,3 +14,11 @@ vim.api.nvim_create_autocmd("ColorScheme", {
     vim.api.nvim_set_hl(0, "WhichKeyGroup", { link = "Keyword", underline = false })
   end,
 })
+
+-- Détection des fichiers .ftl avec support HTML + FTL
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = { "*.ftl", "*.ftlh", "*.ftlx" },
+  callback = function()
+    vim.bo.filetype = "ftl"
+  end,
+})
