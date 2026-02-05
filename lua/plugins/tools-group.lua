@@ -4,6 +4,7 @@ return {
     opts = {
       spec = {
         { "<leader>t", group = "tools", icon = "󱁤 " },
+        { "<leader>ta", group = "ai", icon = "🤖 " },
         { "<leader>l", group = "lazy", icon = "💤 " },
       },
     },
