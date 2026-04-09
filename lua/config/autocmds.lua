@@ -15,6 +15,28 @@ vim.api.nvim_create_autocmd("ColorScheme", {
   end,
 })
 
+-- Indentation par filetype
+-- PHP/Twig : tabs (Pint/Prettier use tabs)
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "php", "twig" },
+  callback = function()
+    vim.bo.expandtab = false
+    vim.bo.tabstop = 4
+    vim.bo.shiftwidth = 4
+    vim.bo.softtabstop = 4
+  end,
+})
+-- JS/TS/Vue/CSS/HTML/JSON/YAML/Lua/Markdown : 2 espaces
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "javascript", "typescript", "vue", "css", "scss", "html", "json", "yaml", "lua", "markdown" },
+  callback = function()
+    vim.bo.expandtab = true
+    vim.bo.tabstop = 2
+    vim.bo.shiftwidth = 2
+    vim.bo.softtabstop = 2
+  end,
+})
+
 -- Détection des fichiers .ftl avec support HTML + FTL
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
   pattern = { "*.ftl", "*.ftlh", "*.ftlx" },

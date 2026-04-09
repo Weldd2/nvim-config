@@ -4,8 +4,6 @@
 --
 vim.g.lazyvim_php_lsp = "intelephense"
 
-vim.opt.shiftwidth = 8
-vim.opt.tabstop = 8
 
 if vim.g.neovide then
   vim.o.guifont = "JetBrainsMono\\ Nerd\\ Font:h18"

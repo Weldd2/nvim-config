@@ -8,7 +8,7 @@ return {
       opts.sources = opts.sources or {}
 
       local phpcs = nls.builtins.diagnostics.phpcs.with({
-        extra_args = { "--exclude=Generic.WhiteSpace.DisallowTabIndent" },
+        extra_args = { "--exclude=PSR12.Operators.OperatorSpacing" },
       })
 
       -- Retire la version par défaut pour éviter les doublons
@@ -20,43 +20,59 @@ return {
     end,
   },
 
-  -- Même configuration côté nvim-lint
+  -- nvim-lint : phpcs + phpstan
   {
     "mfussenegger/nvim-lint",
     optional = true,
-    opts = function()
-      local lint = require("lint")
-      local phpcs = lint.linters.phpcs
-      if not phpcs then
-        return
-      end
-
-      phpcs.args = {
-        "-q",
-        "--report=json",
-        function()
-          return "--stdin-path=" .. vim.fn.expand("%:p:.")
-        end,
-        "--exclude=Generic.WhiteSpace.DisallowTabIndent",
-        "-",
-      }
-    end,
+    opts = {
+      linters_by_ft = {
+        php = { "phpcs", "phpstan" },
+      },
+      linters = {
+        phpcs = {
+          args = {
+            "-q",
+            "--report=json",
+            function()
+              return "--stdin-path=" .. vim.fn.expand("%:p:.")
+            end,
+            "--exclude=PSR12.Operators.OperatorSpacing",
+            "-",
+          },
+        },
+        phpstan = {
+          args = {
+            "analyze",
+            "--error-format=json",
+            "--no-progress",
+            "--memory-limit=512M",
+          },
+        },
+      },
+    },
   },
 
-  -- Active Prettier sur les fichiers PHP via conform
+  -- Active Pint sur les fichiers PHP et Prettier sur Twig via conform
   {
     "stevearc/conform.nvim",
     optional = true,
-    opts = function(_, opts)
-      opts.formatters_by_ft = opts.formatters_by_ft or {}
-      local formatters = vim.deepcopy(opts.formatters_by_ft.php or {})
-
-      if not vim.tbl_contains(formatters, "prettier") then
-        table.insert(formatters, 1, "prettier")
-      end
-
-      opts.formatters_by_ft.php = formatters
-    end,
+    opts = {
+      formatters_by_ft = {
+        php = { "pint" },
+        twig = { "prettier" },
+      },
+      formatters = {
+        pint = {
+          prepend_args = function()
+            local local_pint = vim.fn.getcwd() .. "/vendor/bin/pint"
+            if vim.fn.executable(local_pint) == 1 then
+              return { "--config", vim.fn.getcwd() .. "/pint.json" }
+            end
+            return {}
+          end,
+        },
+      },
+    },
   },
 }
 
