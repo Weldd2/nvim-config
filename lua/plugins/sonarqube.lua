@@ -17,10 +17,7 @@ return {
 
       local jar_path = extension_path .. "/server/sonarlint-ls.jar"
       if vim.fn.filereadable(jar_path) == 0 then
-        vim.notify(
-          "SonarLint LSP not found. Run :SonarQubeInstallLsp to install it.",
-          vim.log.levels.WARN
-        )
+        vim.notify("SonarLint LSP not found. Run :SonarQubeInstallLsp to install it.", vim.log.levels.WARN)
       end
 
       require("sonarqube").setup({

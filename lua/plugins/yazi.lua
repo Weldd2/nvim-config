@@ -27,27 +27,12 @@ return {
         "<leader>e",
         mode = { "n", "v" },
         "<cmd>Yazi<cr>",
-        desc = "Open yazi at the current file",
+        desc = "Open yazi",
       },
       {
         "<leader>E",
         "<cmd>Yazi cwd<cr>",
-        desc = "Open the file manager in nvim's working directory",
-      },
-      {
-        "<leader>fE",
-        "<cmd>Yazi<cr>",
-        desc = "Explorer Yazi (root dir)",
-      },
-      {
-        "<leader>fe",
-        "<cmd>Yazi cwd<cr>",
-        desc = "Explorer Yazi (cwd)",
-      },
-      {
-        "<c-up>",
-        "<cmd>Yazi toggle<cr>",
-        desc = "Resume the last yazi session",
+        desc = "Open yazi (cwd)",
       },
     },
     opts = {
@@ -56,7 +41,7 @@ return {
       yazi_floating_window_winblend = 0,
       yazi_floating_window_border = "rounded",
       keymaps = {
-        show_help = "<f1>",
+        show_help = "?",
         open_file_in_vertical_split = "<c-v>",
         open_file_in_horizontal_split = "<c-x>",
         open_file_in_tab = "<c-t>",
