@@ -66,16 +66,11 @@ return {
         if vim.bo[bufnr].filetype ~= "php" then
           return nil
         end
-        -- Skip si le fichier est vraiment énorme (pint peut prendre >10s)
-        local max_lines = 5000
-        if vim.api.nvim_buf_line_count(bufnr) > max_lines then
-          vim.notify(
-            ("conform: pint skipped (>%d lines), run :Format manually"):format(max_lines),
-            vim.log.levels.WARN
-          )
-          return nil
-        end
-        return { timeout_ms = 30000, lsp_format = "fallback" }
+        -- pint tourne ici en arrière-plan (format_after_save = asynchrone),
+        -- donc même un gros contrôleur ne bloque jamais l'éditeur. Le
+        -- timeout_ms est juste une limite de sécurité, pas une attente : on
+        -- le laisse large pour ne plus jamais "timeout" sur les gros fichiers.
+        return { timeout_ms = 120000, lsp_format = "fallback" }
       end,
       formatters = {
         pint = {
@@ -89,6 +84,25 @@ return {
         },
       },
     },
+  },
+
+  -- Format manuel PHP en asynchrone : pint peut prendre plusieurs secondes
+  -- sur les gros contrôleurs. En async, conform ne bloque pas l'éditeur et
+  -- `timeout_ms` est ignoré → plus jamais de "Formatter 'pint' timeout".
+  -- (mapping bufferlocal => prioritaire sur le <leader>cf global de LazyVim)
+  {
+    "stevearc/conform.nvim",
+    optional = true,
+    init = function()
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "php",
+        callback = function(ev)
+          vim.keymap.set({ "n", "x" }, "<leader>cf", function()
+            require("conform").format({ async = true, lsp_format = "fallback", bufnr = ev.buf })
+          end, { buffer = ev.buf, desc = "Format (pint, async)" })
+        end,
+      })
+    end,
   },
 
   -- Désactiver le formateur ESLint LSP de l'extra linting.eslint
