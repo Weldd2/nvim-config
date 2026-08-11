@@ -53,25 +53,10 @@ return {
         typescript = { "eslint_d", "prettier" },
         typescriptreact = { "eslint_d", "prettier" },
       },
-      -- pint peut être très lent sur de gros fichiers PHP (PatientController…).
-      -- => format synchrone court pour tout le monde, mais async pour PHP
-      --    afin que `:w` ne bloque jamais l'éditeur.
-      format_on_save = function(bufnr)
-        if vim.bo[bufnr].filetype == "php" then
-          return false
-        end
-        return { timeout_ms = 1000, lsp_format = "fallback" }
-      end,
-      format_after_save = function(bufnr)
-        if vim.bo[bufnr].filetype ~= "php" then
-          return nil
-        end
-        -- pint tourne ici en arrière-plan (format_after_save = asynchrone),
-        -- donc même un gros contrôleur ne bloque jamais l'éditeur. Le
-        -- timeout_ms est juste une limite de sécurité, pas une attente : on
-        -- le laisse large pour ne plus jamais "timeout" sur les gros fichiers.
-        return { timeout_ms = 120000, lsp_format = "fallback" }
-      end,
+      -- NB : ne PAS définir `format_on_save` / `format_after_save` ici.
+      -- LazyVim les supprime (warning) et pilote lui-même le format au save
+      -- via son autocmd. Le cas PHP (lent, non bloquant) est géré dans
+      -- lua/config/autocmds.lua (autoformat désactivé + <leader>cf async).
       formatters = {
         pint = {
           prepend_args = function()
@@ -84,25 +69,6 @@ return {
         },
       },
     },
-  },
-
-  -- Format manuel PHP en asynchrone : pint peut prendre plusieurs secondes
-  -- sur les gros contrôleurs. En async, conform ne bloque pas l'éditeur et
-  -- `timeout_ms` est ignoré → plus jamais de "Formatter 'pint' timeout".
-  -- (mapping bufferlocal => prioritaire sur le <leader>cf global de LazyVim)
-  {
-    "stevearc/conform.nvim",
-    optional = true,
-    init = function()
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = "php",
-        callback = function(ev)
-          vim.keymap.set({ "n", "x" }, "<leader>cf", function()
-            require("conform").format({ async = true, lsp_format = "fallback", bufnr = ev.buf })
-          end, { buffer = ev.buf, desc = "Format (pint, async)" })
-        end,
-      })
-    end,
   },
 
   -- Désactiver le formateur ESLint LSP de l'extra linting.eslint
