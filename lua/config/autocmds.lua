@@ -7,22 +7,14 @@
 -- Or remove existing autocmds by their group name (which is prefixed with `lazyvim_` for the defaults)
 -- e.g. vim.api.nvim_del_augroup_by_name("lazyvim_wrap_spell")
 
--- PHP : pint peut prendre plusieurs secondes sur les gros contrôleurs.
--- On désactive donc le format-on-save synchrone de LazyVim pour les buffers PHP
--- (sinon `:w` bloque l'éditeur), et on fournit un format manuel asynchrone via
--- <leader>cf. IMPORTANT : ce keymap doit vivre dans un autocmd ici, et surtout
--- PAS dans un `init` du spec conform.nvim, sinon il écrase le `init` du core
--- LazyVim qui enregistre le formateur conform (→ plus aucun prettier au save).
+-- PHP : Configuration de l'indentation (4 espaces)
+-- Le format-on-save async est géré via conform.nvim (format_after_save)
+-- dans lua/plugins/formatting.lua pour éviter de bloquer l'éditeur
+-- sur les gros fichiers.
 vim.api.nvim_create_autocmd("FileType", {
-  group = vim.api.nvim_create_augroup("php_async_format", { clear = true }),
+  group = vim.api.nvim_create_augroup("php_config", { clear = true }),
   pattern = "php",
   callback = function(ev)
-    vim.b[ev.buf].autoformat = false
-    vim.keymap.set({ "n", "x" }, "<leader>cf", function()
-      require("conform").format({ async = true, lsp_format = "fallback", bufnr = ev.buf })
-    end, { buffer = ev.buf, desc = "Format (pint, async)" })
-
-    -- Configuration de l'indentation pour PHP (4 espaces)
     vim.bo[ev.buf].expandtab = true     -- Utiliser des espaces au lieu de tabs
     vim.bo[ev.buf].shiftwidth = 4       -- Largeur de l'indentation automatique
     vim.bo[ev.buf].tabstop = 4          -- Largeur d'affichage d'un caractère tab

@@ -53,10 +53,16 @@ return {
         typescript = { "eslint_d", "prettier" },
         typescriptreact = { "eslint_d", "prettier" },
       },
-      -- NB : ne PAS définir `format_on_save` / `format_after_save` ici.
-      -- LazyVim les supprime (warning) et pilote lui-même le format au save
-      -- via son autocmd. Le cas PHP (lent, non bloquant) est géré dans
-      -- lua/config/autocmds.lua (autoformat désactivé + <leader>cf async).
+      -- format_after_save pour PHP uniquement (async, non bloquant)
+      -- Les autres filetypes utilisent le format-on-save synchrone de LazyVim
+      format_after_save = function(bufnr)
+        if vim.bo[bufnr].filetype == "php" then
+          return {
+            lsp_format = "fallback",
+            timeout_ms = 5000,
+          }
+        end
+      end,
       formatters = {
         pint = {
           prepend_args = function()

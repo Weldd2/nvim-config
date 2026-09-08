@@ -1,3 +1,6 @@
+-- Local proxy env (gitignored). Applies to nvim and Neovide.
+pcall(require, "config.proxy")
+
 -- bootstrap lazy.nvim, LazyVim and your plugins
 require("config.lazy")
 
